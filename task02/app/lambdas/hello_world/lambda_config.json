@@ -15,5 +15,6 @@
   "alias": "${lambdas_alias_name}",
   "url_config": {},
   "ephemeral_storage": 512,
+  "auth_type": "NONE",
   "tags": {}
 }
