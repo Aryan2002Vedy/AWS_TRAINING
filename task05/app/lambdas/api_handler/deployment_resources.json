@@ -3,11 +3,29 @@
     "predefined_policies": [],
     "principal_service": "lambda",
     "custom_policies": [
-      "lambda-basic-execution"
+      "lambda-basic-execution",
+      "dynamodb:GetItem",
+      "dynamodb:Query",
+      "dynamodb:PutItem",
+      "dynamodb:Batch*",
+      "dynamodb:DeleteItem"
     ],
     "resource_type": "iam_role",
-    "allowed_accounts": [
-      "196241772369"
-    ]
+    "tags": {},
+    "${demo_table}": {
+		"resource_type": "dynamodb_table",
+		"hash_key_name": "id",
+		"hash_key_type": "N",
+		"read_capacity": 1,
+		"write_capacity": 1,
+		"global_indexes": [
+		  {
+			"name": "number-index",
+			"index_key_name": "number",
+			"index_key_type": "N"
+		  }
+		],
+		"autoscaling": []
+	  }
   }
 }

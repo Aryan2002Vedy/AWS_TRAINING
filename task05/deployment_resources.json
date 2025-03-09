@@ -9,16 +9,16 @@
             "logs:PutLogEvents",
             "dynamodb:GetItem",
             "dynamodb:Query",
-            "dynamodb:GetItem",
-            "dynamodb:Query",
-            "dynamodb:PutItem",
-            "dynamodb:Batch*",
-            "dynamodb:DeleteItem",
             "dynamodb:PutItem",
             "dynamodb:Batch*",
             "dynamodb:DeleteItem",
             "ssm:PutParameter",
             "ssm:GetParameter",
+            "dynamodb:GetItem",
+            "dynamodb:Query",
+            "dynamodb:PutItem",
+            "dynamodb:Batch*",
+            "dynamodb:DeleteItem",
             "kms:Decrypt"
           ],
           "Effect": "Allow",
@@ -46,10 +46,9 @@
     "dependencies": [],
     "resources": {
       "/events": {
-        "enable_cors": false,
+        "enable_cors": true,
         "POST": {
           "authorization_type": "NONE",
-          "enable_proxy": true,
           "integration_type": "lambda",
           "lambda_name": "api_handler",
           "api_key_required": false,
@@ -57,7 +56,8 @@
           "integration_request_body_template": {},
           "responses": [],
           "integration_responses": [],
-          "default_error_pattern": true
+          "default_error_pattern": true,
+          "enable_proxy": true
         }
       }
     },
