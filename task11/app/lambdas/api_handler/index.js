@@ -46,30 +46,34 @@ exports.handler = async (event) => {
         return sendResponse(500, { error: "Internal Server Error" });
     }
 };
-async function signup(body) {
-    const { username, password, email } = body;
-
-    const signUpParams = {
-        ClientId: process.env.cup_client_id, // Use correct client ID
-        Username: username,
+async function signUpUser(email, password, userPoolId, clientId) {
+    const params = {
+        ClientId: clientId,
+        Username: email,
         Password: password,
-        UserAttributes: [{ Name: "email", Value: email }]
+        UserAttributes: [{ Name: 'email', Value: email }]
     };
 
     try {
-        await cognito.signUp(signUpParams).promise();
-
-        // Confirm user signup so they don't remain in "UNCONFIRMED" state
+        const data = await cognitoIdentityServiceProvider.signUp(params).promise();
         const confirmParams = {
-            UserPoolId: USER_POOL_ID,
-            Username: username
+            Username: email,
+            UserPoolId: userPoolId
         };
-        await cognito.adminConfirmSignUp(confirmParams).promise();
 
-        return sendResponse(201, { message: "User registered successfully" });
+        const confirmedResult = await cognitoIdentityServiceProvider.adminConfirmSignUp(confirmParams).promise();
+        return {
+            statusCode: 200,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: 'OK' })
+        };
     } catch (error) {
-        console.error("Signup Error:", error);
-        return sendResponse(400, { error: error.message });
+        console.error(error);
+        return {
+            statusCode: 500,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ error: "Signing up failed", details: error.message })
+        };
     }
 }
 
