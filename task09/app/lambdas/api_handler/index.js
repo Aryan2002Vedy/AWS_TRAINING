@@ -1,4 +1,4 @@
-const axios = require("axios");
+const { getWeatherData } = require("../layers/weather_sdk/index"); // Import from Lambda Layer
 
 exports.lambdaHandler = async (event) => {
     const path = event.rawPath || "/";
@@ -6,26 +6,17 @@ exports.lambdaHandler = async (event) => {
 
     if (path === "/weather" && method === "GET") {
         try {
-            // Call the Open-Meteo API
-            const response = await axios.get("https://api.open-meteo.com/v1/forecast", {
-                params: {
-                    latitude: 52.52,
-                    longitude: 13.41,
-                    current: "temperature_2m,wind_speed_10m",
-                    hourly: "temperature_2m,relative_humidity_2m,wind_speed_10m"
-                }
-            });
+            const weatherData = await getWeatherData();
 
             return {
                 statusCode: 200,
-                body: JSON.stringify(response.data),
+                body: JSON.stringify(weatherData),
                 headers: {
                     "content-type": "application/json"
                 },
                 isBase64Encoded: false
             };
         } catch (error) {
-            console.error("Error fetching weather data:", error);
             return {
                 statusCode: 500,
                 body: JSON.stringify({
