@@ -46,31 +46,22 @@ exports.handler = async (event) => {
         return sendResponse(500, { error: "Internal Server Error" });
     }
 };
-async function signup(body) {
-    const { username, password, email } = body;
-
-    const signUpParams = {
-        ClientId: process.env.cup_client_id, // Use correct client ID
-        Username: username,
-        Password: password,
-        UserAttributes: [{ Name: "email", Value: email }]
-    };
-
-    try {
-        await cognito.signUp(signUpParams).promise();
-
-        // Confirm user signup so they don't remain in "UNCONFIRMED" state
-        const confirmParams = {
-            UserPoolId: USER_POOL_ID,
-            Username: username
-        };
-        await cognito.adminConfirmSignUp(confirmParams).promise();
-
-        return sendResponse(201, { message: "User registered successfully" });
-    } catch (error) {
-        console.error("Signup Error:", error);
-        return sendResponse(400, { error: error.message });
-    }
+async function signup({ username, password, email }) {
+  const params = {
+    ClientId: process.env.cup_client_id,
+    Username: username,
+    UserAttributes: [
+      { Name: 'email', Value: email },
+    ],
+    TemporaryPassword: password,
+  };
+  try {
+    await cognito.adminCreateUser(params).promise();
+    return sendResponse(201, { message: 'Signup successful' });
+  } catch (error) {
+    console.error('Signup error:', error);
+    return sendResponse(400, { message: 'Signup failed', error: error.message });
+  }
 }
 
 async function signin(body) {
