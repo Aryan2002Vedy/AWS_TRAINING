@@ -1,4 +1,4 @@
-const WeatherClient = require("/opt/weatherClient");
+const WeatherClient = require("../layers/weather_sdk/weatherClient");
 
 exports.handler = async (event) => {
     const path = event.rawPath;
