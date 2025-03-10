@@ -48,7 +48,7 @@ exports.handler = async (event) => {
 };
 async function signup({ username, password, email }) {
   const params = {
-    ClientId: process.env.cup_client_id,
+    UserPoolId: USER_POOL_ID,
     Username: username,
     UserAttributes: [
       { Name: 'email', Value: email },
