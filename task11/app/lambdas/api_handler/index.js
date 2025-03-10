@@ -80,7 +80,7 @@ async function signin(body) {
         return sendResponse(200, { token: result.AuthenticationResult.IdToken });
     } catch (error) {
         console.error("Signin Error:", error);
-        return sendResponse(401, { error: "Invalid credentials" });
+        return sendResponse(400, { error: "Invalid credentials" });
     }
 }
 async function getTables() {
