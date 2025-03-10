@@ -11,14 +11,16 @@ class WeatherClient {
                 params: {
                     latitude,
                     longitude,
-                    hourly: ["temperature_2m", "relative_humidity_2m", "wind_speed_10m"],
-                    current: ["temperature_2m", "wind_speed_10m"],
+                    hourly: "temperature_2m,relative_humidity_2m,wind_speed_10m",  // Ensure correct parameter format
                     timezone: "auto",
                 }
             });
+
+            console.log("Weather API Response:", JSON.stringify(response.data, null, 2));  // Debugging
+
             return response.data;
         } catch (error) {
-            console.error("Error fetching weather data:", error);
+            console.error("Error fetching weather data:", error.message);
             throw new Error("Failed to retrieve weather data");
         }
     }
