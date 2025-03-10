@@ -49,29 +49,37 @@ exports.handler = async (event) => {
 async function signup(body) {
     const { username, password, email } = body;
 
-    const params = {
-        UserPoolId: USER_POOL_ID,
+    const signUpParams = {
+        ClientId: process.env.cup_client_id, // Use correct client ID
         Username: username,
-        UserAttributes: [{ Name: "email", Value: email }],
-        MessageAction: "SUPPRESS", // Avoid sending a verification email
-        TemporaryPassword: password,
+        Password: password,
+        UserAttributes: [{ Name: "email", Value: email }]
     };
 
     try {
-        await cognito.adminCreateUser(params).promise();
-        return sendResponse(400, { message: "User registered successfully" });
+        await cognito.signUp(signUpParams).promise();
+
+        // Confirm user signup so they don't remain in "UNCONFIRMED" state
+        const confirmParams = {
+            UserPoolId: USER_POOL_ID,
+            Username: username
+        };
+        await cognito.adminConfirmSignUp(confirmParams).promise();
+
+        return sendResponse(201, { message: "User registered successfully" });
     } catch (error) {
         console.error("Signup Error:", error);
-        return sendResponse(200, { error: error.message });
+        return sendResponse(400, { error: error.message });
     }
 }
+
 async function signin(body) {
     const { username, password } = body;
 
     const params = {
         AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
         UserPoolId: USER_POOL_ID,
-        ClientId: process.env.COGNITO_CLIENT_ID, // Set in env variables
+        ClientId: process.env.cup_client_id, // Set in env variables
         AuthParameters: { USERNAME: username, PASSWORD: password },
     };
 

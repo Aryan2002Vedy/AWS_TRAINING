@@ -18,7 +18,7 @@
   "env_variables": {
     "TablesDb": "${tables_table}",
     "ReservationDb": "${reservations_table}",
-    "PoolDb": "${booking_userpool}",
+    "booking_userpool": "${booking_userpool}",
     "cup_id": {
       "resource_name": "${booking_userpool}",
       "resource_type": "cognito_idp",
