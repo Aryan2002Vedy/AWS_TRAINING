@@ -3,7 +3,7 @@
 
     // Define a valid event (simulating API Gateway request)
     const event = {
-        rawPath: "/weathe",
+        rawPath: "/weather",
         requestContext: { http: { method: "GET" } },
     };
 
