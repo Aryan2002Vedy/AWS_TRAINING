@@ -49,21 +49,14 @@ exports.handler = async (event) => {
 async function signup(body) {
     const { username, password, email } = body;
 
-    // Validate input
-    const validationError = validateSignupInput(username, password, email);
-    if (validationError) {
-        return sendResponse(400, { error: validationError });
-    }
-
     const signUpParams = {
-        ClientId: CLIENT_ID,
+        ClientId: process.env.cup_client_id, // Use correct client ID
         Username: username,
         Password: password,
         UserAttributes: [{ Name: "email", Value: email }]
     };
 
     try {
-        console.log("Signing up user:", username);
         await cognito.signUp(signUpParams).promise();
 
         // Confirm user signup so they don't remain in "UNCONFIRMED" state
@@ -71,12 +64,9 @@ async function signup(body) {
             UserPoolId: USER_POOL_ID,
             Username: username
         };
-
-        console.log("Confirming user:", username);
         await cognito.adminConfirmSignUp(confirmParams).promise();
 
         return sendResponse(201, { message: "User registered successfully" });
-
     } catch (error) {
         console.error("Signup Error:", error);
         return sendResponse(400, { error: error.message });
