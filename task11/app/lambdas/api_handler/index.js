@@ -46,34 +46,40 @@ exports.handler = async (event) => {
         return sendResponse(500, { error: "Internal Server Error" });
     }
 };
-async function signUpUser(email, password, userPoolId, clientId) {
-    const params = {
-        ClientId: clientId,
-        Username: email,
+async function signup(body) {
+    const { username, password, email } = body;
+
+    // Validate input
+    const validationError = validateSignupInput(username, password, email);
+    if (validationError) {
+        return sendResponse(400, { error: validationError });
+    }
+
+    const signUpParams = {
+        ClientId: CLIENT_ID,
+        Username: username,
         Password: password,
-        UserAttributes: [{ Name: 'email', Value: email }]
+        UserAttributes: [{ Name: "email", Value: email }]
     };
 
     try {
-        const data = await cognitoIdentityServiceProvider.signUp(params).promise();
+        console.log("Signing up user:", username);
+        await cognito.signUp(signUpParams).promise();
+
+        // Confirm user signup so they don't remain in "UNCONFIRMED" state
         const confirmParams = {
-            Username: email,
-            UserPoolId: userPoolId
+            UserPoolId: USER_POOL_ID,
+            Username: username
         };
 
-        const confirmedResult = await cognitoIdentityServiceProvider.adminConfirmSignUp(confirmParams).promise();
-        return {
-            statusCode: 200,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: 'OK' })
-        };
+        console.log("Confirming user:", username);
+        await cognito.adminConfirmSignUp(confirmParams).promise();
+
+        return sendResponse(201, { message: "User registered successfully" });
+
     } catch (error) {
-        console.error(error);
-        return {
-            statusCode: 500,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ error: "Signing up failed", details: error.message })
-        };
+        console.error("Signup Error:", error);
+        return sendResponse(400, { error: error.message });
     }
 }
 
