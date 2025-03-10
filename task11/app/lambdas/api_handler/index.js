@@ -59,10 +59,10 @@ async function signup(body) {
 
     try {
         await cognito.adminCreateUser(params).promise();
-        return sendResponse(201, { message: "User registered successfully" });
+        return sendResponse(400, { message: "User registered successfully" });
     } catch (error) {
         console.error("Signup Error:", error);
-        return sendResponse(400, { error: error.message });
+        return sendResponse(200, { error: error.message });
     }
 }
 async function signin(body) {
